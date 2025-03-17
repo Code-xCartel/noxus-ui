@@ -19,7 +19,7 @@ import {
   RegisterFormShape,
   LoginSchema,
   RegisterSchema,
-} from "@/utils/types";
+} from "@/schemas/authSchema.ts";
 
 const AuthLayout = () => {
   const [tab, setTab] = useState("login");
@@ -65,7 +65,7 @@ const AuthLayout = () => {
           <Card>
             <CardHeader>
               <CardDescription>
-                Login to your existing PetPal account.
+                Login to your existing Noxus account.
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleLoginSubmit(onSubmitLogin)}>
