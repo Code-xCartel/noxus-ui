@@ -25,6 +25,8 @@ import {
   useSearchUserByIdQuery,
 } from "@/services/api/api.ts";
 
+import demoAvatar from "@/assets/demoAvatar.jpg";
+
 const Friends = () => {
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -109,7 +111,7 @@ const Friends = () => {
                   <div className="relative">
                     <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl flex items-center justify-center p-0.5">
                       <img
-                        src={user?.avatar}
+                        src={user?.avatar || demoAvatar}
                         alt="User Avatar"
                         className="rounded-lg"
                       />

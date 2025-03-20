@@ -1,5 +1,7 @@
 import { Check, X } from "lucide-react";
 
+import demoAvatar from "@/assets/demoAvatar.jpg";
+
 import { NoxusUser } from "@/utils/types";
 
 const FriendRequestCard = ({ request }: { request: NoxusUser }) => {
@@ -11,7 +13,7 @@ const FriendRequestCard = ({ request }: { request: NoxusUser }) => {
           <div className="relative">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-700 p-0.5 rounded-lg rotate-3 hover:rotate-0 transition-transform duration-300">
               <img
-                src="/api/placeholder/40/40"
+                src={request.avatar || demoAvatar}
                 alt={request.username}
                 className="w-full h-full object-cover rounded-md"
               />

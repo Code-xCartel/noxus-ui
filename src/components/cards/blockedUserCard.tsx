@@ -1,12 +1,14 @@
 import { NoxusUser } from "@/utils/types.ts";
 
+import demoAvatar from "@/assets/demoAvatar.jpg";
+
 const BlockedUserCard = ({ blockedUser }: { blockedUser: NoxusUser }) => {
   return (
     <div className="flex items-center justify-between p-4 bg-gray-800 bg-opacity-60 backdrop-blur-sm rounded-lg border-l-4 border-red-700">
       <div className="flex items-center space-x-3">
         <div className="relative">
           <img
-            src="/api/placeholder/40/40"
+            src={blockedUser.avatar || demoAvatar}
             alt={blockedUser.username}
             className="w-10 h-10 rounded-md filter grayscale"
           />

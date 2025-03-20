@@ -1,5 +1,8 @@
-import SideNavbar from "@/components/sideNavbar.tsx";
 import { Bell } from "lucide-react";
+
+import SideNavbar from "@/components/sideNavbar.tsx";
+
+import demoAvatar from "@/assets/demoAvatar.jpg";
 
 const Header = () => {
   return (
@@ -17,7 +20,7 @@ const Header = () => {
             </button>
             <div className="hidden md:block h-8 w-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full overflow-hidden">
               <img
-                src="/api/placeholder/32/32"
+                src={demoAvatar}
                 alt="Profile"
                 className="h-full w-full object-cover"
               />

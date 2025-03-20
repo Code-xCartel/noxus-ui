@@ -1,5 +1,7 @@
 import { MessageCircle, Settings } from "lucide-react";
 
+import demoAvatar from "@/assets/demoAvatar.jpg";
+
 import { Friend } from "@/utils/types.ts";
 
 type FriendCardProps = {
@@ -21,7 +23,7 @@ const FriendCard = ({
           <div className="relative">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center overflow-hidden">
               <img
-                src="/api/placeholder/40/40"
+                src={friend.avatar || demoAvatar}
                 alt={friend.username}
                 className="w-10 h-10 rounded-md object-cover"
               />
