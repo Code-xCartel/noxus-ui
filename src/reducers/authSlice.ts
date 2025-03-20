@@ -1,9 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { User } from "@/utils/types.ts";
 
-const initialState = {
+type State = {
+  isAuthenticated: boolean;
+  user: User;
+  token: string;
+};
+
+const initialState: State = {
   isAuthenticated: false,
-  user: null,
-  token: null,
+  user: {
+    noxId: "",
+    email: "",
+    username: "",
+  },
+  token: "",
 };
 
 const authSlice = createSlice({
@@ -16,8 +27,8 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
     logout: (state) => {
-      state.user = null;
-      state.token = null;
+      state.user = { avatar: "", email: "", noxId: "", username: "" };
+      state.token = "";
       state.isAuthenticated = false;
     },
     validate: (state, action) => {
