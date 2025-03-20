@@ -5,6 +5,7 @@ import Home from "@/pages/home.tsx";
 import ProtectedRoutes from "@/components/protectedRoutes.tsx";
 import Header from "@/components/header.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
+import Friends from "@/pages/friends.tsx";
 
 import { routes } from "@/constants/routes.ts";
 
@@ -16,6 +17,7 @@ const App = () => {
         <Route path={routes.AUTH} element={<AuthLayout />} />
         <Route element={<ProtectedRoutes />}>
           <Route path={routes.HOME} element={<Home />} />
+          <Route path={routes.FRIENDS} element={<Friends />} />
         </Route>
       </Routes>
       <Toaster />
