@@ -22,6 +22,14 @@ type SearchbarProps = {
   sendFriendRequest: (args: string) => Promise<void>;
   isAddingFriend: boolean;
   searchError: FetchBaseQueryError | SerializedError | undefined;
+  isFriendAlreadyAdded: (args: string) => boolean;
+  handleRemoveFriend: (args: string) => Promise<void>;
+  isRemovingFriend: boolean;
+  handleBlockFriend: (args: string) => Promise<void>;
+  isBlockingFriend: boolean;
+  isBlockedUser: (args: string) => boolean;
+  handleUnblockUser: (args: string) => Promise<void>;
+  isUnblockingUser: boolean;
 };
 
 const Searchbar = ({
@@ -33,6 +41,14 @@ const Searchbar = ({
   sendFriendRequest,
   isAddingFriend,
   searchError,
+  isFriendAlreadyAdded,
+  handleRemoveFriend,
+  isRemovingFriend,
+  handleBlockFriend,
+  isBlockingFriend,
+  isBlockedUser,
+  handleUnblockUser,
+  isUnblockingUser,
 }: SearchbarProps) => {
   const [open, setOpen] = useState(false);
 
@@ -86,18 +102,42 @@ const Searchbar = ({
               </div>
             ) : !isValidSearchQuery ? (
               "please enter a valid id"
-            ) : searchResult ? (
+            ) : !searchResult ? (
+              <span>No user found</span>
+            ) : (
               <div>
                 {searchResult.username}
-                <Button
-                  onClick={() => sendFriendRequest(searchResult.noxId)}
-                  disabled={isAddingFriend}
-                >
-                  add
-                </Button>
+                {isFriendAlreadyAdded(searchResult.noxId) ? (
+                  <div className="text-red-500">
+                    <Button
+                      onClick={() => handleRemoveFriend(searchResult.noxId)}
+                      disabled={isRemovingFriend}
+                    >
+                      remove
+                    </Button>
+                    <Button
+                      onClick={() => handleBlockFriend(searchResult.noxId)}
+                      disabled={isBlockingFriend}
+                    >
+                      block
+                    </Button>
+                  </div>
+                ) : isBlockedUser(searchResult.noxId) ? (
+                  <Button
+                    onClick={() => handleUnblockUser(searchResult.noxId)}
+                    disabled={isUnblockingUser}
+                  >
+                    unblock
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => sendFriendRequest(searchResult.noxId)}
+                    disabled={isAddingFriend}
+                  >
+                    add
+                  </Button>
+                )}
               </div>
-            ) : (
-              "no found"
             )}
           </div>
         </CommandList>

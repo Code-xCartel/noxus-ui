@@ -1,19 +1,25 @@
-import { MessageCircle, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 
 import demoAvatar from "@/assets/demoAvatar.jpg";
 
 import { Friend } from "@/utils/types.ts";
 
+import Spinner from "@/components/spinner.tsx";
+
 type FriendCardProps = {
   friend: Friend;
   handleBlockFriend: (args: string) => Promise<void>;
-  isBlocking: boolean;
+  isBlockingFriend: boolean;
+  handleRemoveFriend: (args: string) => Promise<void>;
+  isRemovingFriend: boolean;
 };
 
 const FriendCard = ({
   friend,
   handleBlockFriend,
-  isBlocking,
+  isBlockingFriend,
+  handleRemoveFriend,
+  isRemovingFriend,
 }: FriendCardProps) => {
   return (
     <div className="group relative overflow-hidden p-4 rounded-lg hover:bg-opacity-80 transition-all duration-300 border border-transparent hover:border-purple-800">
@@ -48,23 +54,19 @@ const FriendCard = ({
           </div>
         </div>
         <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="p-2 bg-purple-800/50 text-purple-300 hover:bg-purple-700 hover:text-white rounded-md transition-colors">
-            <MessageCircle className="w-4 h-4" />
+          <button
+            disabled={isBlockingFriend}
+            onClick={() => handleBlockFriend(friend.noxId)}
+            className="p-2 bg-purple-800/50 text-purple-300 hover:bg-purple-700 hover:text-white rounded-md transition-colors"
+          >
+            {isBlockingFriend ? <Spinner /> : "block"}
           </button>
-          <button className="p-2 bg-gray-800/50 text-gray-400 hover:bg-gray-700 hover:text-white rounded-md transition-colors">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
+          <button
+            disabled={isRemovingFriend}
+            onClick={() => handleRemoveFriend(friend.noxId)}
+            className="p-2 bg-gray-800/50 text-gray-400 hover:bg-gray-700 hover:text-white rounded-md transition-colors"
+          >
+            {isRemovingFriend ? <Spinner /> : "remove friend"}
           </button>
           <button className="p-2 bg-gray-800/50 text-gray-400 hover:bg-gray-700 hover:text-white rounded-md transition-colors">
             <Settings className="w-4 h-4" />

@@ -3,8 +3,23 @@ import { Check, X } from "lucide-react";
 import demoAvatar from "@/assets/demoAvatar.jpg";
 
 import { NoxusUser } from "@/utils/types";
+import Spinner from "@/components/spinner.tsx";
 
-const FriendRequestCard = ({ request }: { request: NoxusUser }) => {
+type FriendRequestCardProps = {
+  request: NoxusUser;
+  handleAcceptFriendRequest: (args: string) => Promise<void>;
+  isAcceptingFriendRequest: boolean;
+  handleRejectFriendRequest: (args: string) => Promise<void>;
+  isRejectingFriendRequest: boolean;
+};
+
+const FriendRequestCard = ({
+  request,
+  handleAcceptFriendRequest,
+  isAcceptingFriendRequest,
+  handleRejectFriendRequest,
+  isRejectingFriendRequest,
+}: FriendRequestCardProps) => {
   return (
     <div className="relative p-4 bg-gray-800 bg-opacity-60 backdrop-blur-sm rounded-lg border border-dashed border-purple-800/30 hover:border-purple-600/50 transition-all duration-300">
       <div className="absolute top-0 right-0 w-20 h-20 bg-purple-600/10 rounded-full blur-2xl"></div>
@@ -30,11 +45,23 @@ const FriendRequestCard = ({ request }: { request: NoxusUser }) => {
           </div>
         </div>
         <div className="flex space-x-2">
-          <button className="p-2 bg-green-600/20 text-green-400 hover:bg-green-600/40 hover:text-green-300 rounded-lg transition-all hover:scale-105 active:scale-95">
-            <Check className="w-5 h-5" />
+          <button
+            onClick={() => handleAcceptFriendRequest(request.noxId)}
+            disabled={isAcceptingFriendRequest}
+            className="p-2 bg-green-600/20 text-green-400 hover:bg-green-600/40 hover:text-green-300 rounded-lg transition-all hover:scale-105 active:scale-95"
+          >
+            {isAcceptingFriendRequest ? (
+              <Spinner />
+            ) : (
+              <Check className="w-5 h-5" />
+            )}
           </button>
-          <button className="p-2 bg-red-600/20 text-red-400 hover:bg-red-600/40 hover:text-red-300 rounded-lg transition-all hover:scale-105 active:scale-95">
-            <X className="w-5 h-5" />
+          <button
+            onClick={() => handleRejectFriendRequest(request.noxId)}
+            disabled={isRejectingFriendRequest}
+            className="p-2 bg-red-600/20 text-red-400 hover:bg-red-600/40 hover:text-red-300 rounded-lg transition-all hover:scale-105 active:scale-95"
+          >
+            {isRejectingFriendRequest ? <Spinner /> : <X className="w-5 h-5" />}
           </button>
         </div>
       </div>

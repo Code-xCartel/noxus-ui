@@ -1,8 +1,17 @@
 import { NoxusUser } from "@/utils/types.ts";
 
 import demoAvatar from "@/assets/demoAvatar.jpg";
-
-const BlockedUserCard = ({ blockedUser }: { blockedUser: NoxusUser }) => {
+import Spinner from "@/components/spinner.tsx";
+type BlockedUserCardProps = {
+  blockedUser: NoxusUser;
+  handleUnblockUser: (args: string) => Promise<void>;
+  isUnblockingUser: boolean;
+};
+const BlockedUserCard = ({
+  blockedUser,
+  handleUnblockUser,
+  isUnblockingUser,
+}: BlockedUserCardProps) => {
   return (
     <div className="flex items-center justify-between p-4 bg-gray-800 bg-opacity-60 backdrop-blur-sm rounded-lg border-l-4 border-red-700">
       <div className="flex items-center space-x-3">
@@ -23,8 +32,12 @@ const BlockedUserCard = ({ blockedUser }: { blockedUser: NoxusUser }) => {
           </div>
         </div>
       </div>
-      <button className="text-sm px-3 py-1 bg-gray-700/50 hover:bg-gray-600 rounded-md text-gray-300 transition-colors">
-        Unblock
+      <button
+        onClick={() => handleUnblockUser(blockedUser.noxId)}
+        disabled={isUnblockingUser}
+        className="text-sm px-3 py-1 bg-gray-700/50 hover:bg-gray-600 rounded-md text-gray-300 transition-colors"
+      >
+        {isUnblockingUser ? <Spinner /> : "Unblock"}
       </button>
     </div>
   );

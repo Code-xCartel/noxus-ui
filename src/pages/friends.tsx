@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Repeat2 } from "lucide-react";
 import { toast } from "sonner";
 
 import BlockedUserCard from "@/components/cards/blockedUserCard.tsx";
@@ -17,15 +17,20 @@ import {
 import { useAppSelector } from "@/hooks/reduxHooks.ts";
 
 import {
+  useAcceptFriendRequestMutation,
   useAddFriendMutation,
   useBlockFriendMutation,
   useGetBlockedUsersQuery,
   useGetFriendRequestsQuery,
   useGetFriendsQuery,
+  useRejectFriendRequestMutation,
+  useRemoveFriendMutation,
   useSearchUserByIdQuery,
+  useUnblockUserMutation,
 } from "@/services/api/api.ts";
 
 import demoAvatar from "@/assets/demoAvatar.jpg";
+import { Button } from "@/components/ui/button.tsx";
 
 const Friends = () => {
   const [copied, setCopied] = useState(false);
@@ -41,6 +46,7 @@ const Friends = () => {
     data: friendRequests,
     isLoading: isLoadingFriendRequests,
     error: friendRequestsError,
+    refetch,
   } = useGetFriendRequestsQuery();
 
   const {
@@ -58,7 +64,16 @@ const Friends = () => {
   } = useSearchUserByIdQuery(searchQuery, { skip: !isValidSearchQuery });
 
   const [addFriend, { isLoading: isAddingFriend }] = useAddFriendMutation();
-  const [blockFriend, { isLoading: isBlocking }] = useBlockFriendMutation();
+  const [blockFriend, { isLoading: isBlockingFriend }] =
+    useBlockFriendMutation();
+  const [removeFriend, { isLoading: isRemovingFriend }] =
+    useRemoveFriendMutation();
+  const [acceptFriendRequest, { isLoading: isAcceptingFriendRequest }] =
+    useAcceptFriendRequestMutation();
+  const [rejectFriendRequest, { isLoading: isRejectingFriendRequest }] =
+    useRejectFriendRequestMutation();
+  const [unblockUser, { isLoading: isUnblockingUser }] =
+    useUnblockUserMutation();
 
   const { user } = useAppSelector((state) => state.auth);
 
@@ -96,6 +111,68 @@ const Friends = () => {
     }
   };
 
+  const isFriendAlreadyAdded = (noxId: string) => {
+    console.log(noxId);
+    return !!friends?.some((item) => item.noxId === noxId);
+  };
+
+  const isBlockedUser = (noxId: string) => {
+    return !!blockedUsers?.some((item) => item.noxId === noxId);
+  };
+
+  const handleRemoveFriend = async (noxId: string) => {
+    try {
+      await removeFriend(noxId).unwrap();
+      toast.success("Friend Removed", {
+        description: `Your friend ${noxId} has been been removed successfully.`,
+      });
+    } catch {
+      toast.error("Failed to remove Friend.", {
+        description:
+          "An error occurred while removing friend. Please try again.",
+      });
+    }
+  };
+
+  const handleAcceptFriendRequest = async (noxId: string) => {
+    try {
+      await acceptFriendRequest(noxId).unwrap();
+      toast.success("Friend Request Accepted", {
+        description: `Friend request from ${noxId} has been been accepted successfully.`,
+      });
+    } catch {
+      toast.error("Failed to accept request.", {
+        description:
+          "An error occurred while accepting friend request. Please try again.",
+      });
+    }
+  };
+
+  const handleRejectFriendRequest = async (noxId: string) => {
+    try {
+      await rejectFriendRequest(noxId).unwrap();
+      toast.success("Friend Request Rejected", {
+        description: `Friend Request from ${noxId} has been been rejected successfully.`,
+      });
+    } catch {
+      toast.error("Failed to Reject Request.", {
+        description:
+          "An error occurred while rejecting friend request. Please try again.",
+      });
+    }
+  };
+
+  const handleUnblockUser = async (noxId: string) => {
+    try {
+      await unblockUser(noxId).unwrap();
+    } catch {
+      toast.error("Failed to Unblock.", {
+        description:
+          "An error occurred while unblocking user. Please try again.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen text-gray-100">
       <div className="container mx-auto px-4 py-8">
@@ -105,15 +182,15 @@ const Friends = () => {
           </h1>
 
           <div className="mb-6 relative p-1 px-6">
-            <div className="relative p-6 rounded-xl border border-purple-700/50 z-50 bg-primary-foreground">
+            <div className="relative p-6 rounded-xl z-50 bg-primary-foreground">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="relative">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl flex items-center justify-center p-0.5">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl p-0.5">
                       <img
                         src={user?.avatar || demoAvatar}
                         alt="User Avatar"
-                        className="rounded-lg"
+                        className="rounded-xl object-cover h-full w-full"
                       />
                     </div>
                   </div>
@@ -155,8 +232,8 @@ const Friends = () => {
                 </div>
               </div>
             </div>
-            <div className="p-[1px] top-0 z-0 absolute left-0 h-full rounded-xl w-20 bg-gradient-to-r from-purple-600 to-indigo-600 group-focus-within:w-full transition-all duration-300"></div>
-            <div className="p-[1px] top-0 z-0 absolute right-0 h-full rounded-xl w-20 bg-gradient-to-r from-purple-600 to-indigo-600 group-focus-within:w-full transition-all duration-300"></div>
+            <div className="p-[1px] top-0 z-0 absolute left-0 h-full rounded-2xl w-20 bg-gradient-to-r from-purple-600 to-indigo-600 group-focus-within:w-full transition-all duration-300"></div>
+            <div className="p-[1px] top-0 z-0 absolute right-0 h-full rounded-2xl w-20 bg-gradient-to-r from-purple-600 to-indigo-600 group-focus-within:w-full transition-all duration-300"></div>
           </div>
 
           <Searchbar
@@ -170,6 +247,14 @@ const Friends = () => {
             sendFriendRequest={sendFriendRequest}
             isAddingFriend={isAddingFriend}
             searchError={searchError}
+            isFriendAlreadyAdded={isFriendAlreadyAdded}
+            handleBlockFriend={handleBlockFriend}
+            handleRemoveFriend={handleRemoveFriend}
+            isBlockingFriend={isBlockingFriend}
+            isRemovingFriend={isRemovingFriend}
+            handleUnblockUser={handleUnblockUser}
+            isBlockedUser={isBlockedUser}
+            isUnblockingUser={isUnblockingUser}
           />
         </div>
 
@@ -206,7 +291,9 @@ const Friends = () => {
                     key={friend.noxId}
                     friend={friend}
                     handleBlockFriend={handleBlockFriend}
-                    isBlocking={isBlocking}
+                    isBlockingFriend={isBlockingFriend}
+                    isRemovingFriend={isRemovingFriend}
+                    handleRemoveFriend={handleRemoveFriend}
                   />
                 ))
               )}
@@ -228,9 +315,27 @@ const Friends = () => {
                   No pending requests.
                 </p>
               ) : (
-                friendRequests?.map((request) => (
-                  <FriendRequestCard key={request.noxId} request={request} />
-                ))
+                <>
+                  <div className="flex justify-end">
+                    <Button
+                      variant="ghost"
+                      onClick={refetch}
+                      className="px-2 py-0 rounded-xl"
+                    >
+                      <Repeat2 className="text-purple-600" />
+                    </Button>
+                  </div>
+                  {friendRequests?.map((request) => (
+                    <FriendRequestCard
+                      key={request.noxId}
+                      request={request}
+                      handleAcceptFriendRequest={handleAcceptFriendRequest}
+                      handleRejectFriendRequest={handleRejectFriendRequest}
+                      isAcceptingFriendRequest={isAcceptingFriendRequest}
+                      isRejectingFriendRequest={isRejectingFriendRequest}
+                    />
+                  ))}
+                </>
               )}
             </div>
           </TabsContent>
@@ -251,7 +356,12 @@ const Friends = () => {
                 </p>
               ) : (
                 blockedUsers?.map((user) => (
-                  <BlockedUserCard key={user.noxId} blockedUser={user} />
+                  <BlockedUserCard
+                    key={user.noxId}
+                    blockedUser={user}
+                    handleUnblockUser={handleUnblockUser}
+                    isUnblockingUser={isUnblockingUser}
+                  />
                 ))
               )}
             </div>
