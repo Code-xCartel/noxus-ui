@@ -29,6 +29,6 @@ export const validateSession = async (dispatch: Dispatch) => {
   if (!session) {
     dispatch(logout());
   } else {
-    dispatch(validate({ user: session.user, token: session.access_token }));
+    dispatch(validate({ user: session.user, token: session.accessToken }));
   }
 };
