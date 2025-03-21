@@ -16,7 +16,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Friends"],
+  tagTypes: ["Friends", "FriendRequests", "BlockUsers"],
   endpoints: (builder) => ({
     login: builder.mutation<UserInfo, LoginData>({
       query: (credentials) => ({
@@ -50,34 +50,46 @@ export const api = createApi({
     }),
     getFriendRequests: builder.query<NoxusUser[], void>({
       query: () => "friends/pending",
+      providesTags: ["FriendRequests"],
     }),
     getBlockedUsers: builder.query<NoxusUser[], void>({
       query: () => "friends/blocked",
+      providesTags: ["BlockUsers"],
     }),
     blockFriend: builder.mutation<void, string>({
       query: (noxId) => ({
         url: `friends/block/${noxId}`,
         method: "PUT",
       }),
+      invalidatesTags: ["Friends", "BlockUsers"],
     }),
-    unblockFriend: builder.mutation<void, string>({
+    unblockUser: builder.mutation<void, string>({
       query: (noxId) => ({
         url: `friends/unblock/${noxId}`,
         method: "PUT",
       }),
+      invalidatesTags: ["Friends", "BlockUsers"],
     }),
     acceptFriendRequest: builder.mutation<void, string>({
       query: (noxID) => ({
         url: `friends/accept/${noxID}`,
         method: "PUT",
       }),
-      invalidatesTags: ["Friends"],
+      invalidatesTags: ["Friends", "FriendRequests"],
     }),
     rejectFriendRequest: builder.mutation<void, string>({
       query: (noxId) => ({
         url: `friends/reject/${noxId}`,
         method: "PUT",
       }),
+      invalidatesTags: ["FriendRequests"],
+    }),
+    removeFriend: builder.mutation({
+      query: (noxId) => ({
+        url: `friends/remove/${noxId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Friends"],
     }),
   }),
 });
@@ -89,9 +101,10 @@ export const {
   useGetFriendRequestsQuery,
   useGetBlockedUsersQuery,
   useBlockFriendMutation,
-  useUnblockFriendMutation,
+  useUnblockUserMutation,
   useAcceptFriendRequestMutation,
   useRejectFriendRequestMutation,
   useSearchUserByIdQuery,
   useAddFriendMutation,
+  useRemoveFriendMutation,
 } = api;
