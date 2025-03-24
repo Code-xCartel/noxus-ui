@@ -19,10 +19,10 @@ type SearchbarProps = {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   searchResult: NoxusUser;
   isSearching: boolean;
-  sendFriendRequest: (args: string) => Promise<void>;
+  addFriend: (args: string) => Promise<void>;
   isAddingFriend: boolean;
   searchError: FetchBaseQueryError | SerializedError | undefined;
-  isFriendAlreadyAdded: (args: string) => boolean;
+  isFriendAlreadyInList: (args: string) => boolean;
   handleRemoveFriend: (args: string) => Promise<void>;
   isRemovingFriend: boolean;
   handleBlockFriend: (args: string) => Promise<void>;
@@ -38,10 +38,10 @@ const Searchbar = ({
   handleChange,
   searchResult,
   isSearching,
-  sendFriendRequest,
+  addFriend,
   isAddingFriend,
   searchError,
-  isFriendAlreadyAdded,
+  isFriendAlreadyInList,
   handleRemoveFriend,
   isRemovingFriend,
   handleBlockFriend,
@@ -107,7 +107,7 @@ const Searchbar = ({
             ) : (
               <div>
                 {searchResult.username}
-                {isFriendAlreadyAdded(searchResult.noxId) ? (
+                {isFriendAlreadyInList(searchResult.noxId) ? (
                   <div className="text-red-500">
                     <Button
                       onClick={() => handleRemoveFriend(searchResult.noxId)}
@@ -131,7 +131,7 @@ const Searchbar = ({
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => sendFriendRequest(searchResult.noxId)}
+                    onClick={() => addFriend(searchResult.noxId)}
                     disabled={isAddingFriend}
                   >
                     add

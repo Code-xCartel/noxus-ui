@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-import { Check, Copy, Repeat2 } from "lucide-react";
-import { toast } from "sonner";
+import { Bell, Check, Copy, Repeat2, Shield, UserPlus } from "lucide-react";
 
 import BlockedUserCard from "@/components/cards/blockedUserCard.tsx";
 import FriendCard from "@/components/cards/friendCard.tsx";
@@ -15,163 +13,54 @@ import {
 } from "@/components/ui/tabs.tsx";
 
 import { useAppSelector } from "@/hooks/reduxHooks.ts";
-
-import {
-  useAcceptFriendRequestMutation,
-  useAddFriendMutation,
-  useBlockFriendMutation,
-  useGetBlockedUsersQuery,
-  useGetFriendRequestsQuery,
-  useGetFriendsQuery,
-  useRejectFriendRequestMutation,
-  useRemoveFriendMutation,
-  useSearchUserByIdQuery,
-  useUnblockUserMutation,
-} from "@/services/api/api.ts";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard.ts";
+import { useFriendService } from "@/hooks/useFriendService.ts";
 
 import demoAvatar from "@/assets/demoAvatar.jpg";
 import { Button } from "@/components/ui/button.tsx";
 
 const Friends = () => {
-  const [copied, setCopied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const {
-    data: friends,
-    isLoading: isLoadingFriends,
-    error: friendsError,
-  } = useGetFriendsQuery();
-
-  const {
-    data: friendRequests,
-    isLoading: isLoadingFriendRequests,
-    error: friendRequestsError,
-    refetch,
-  } = useGetFriendRequestsQuery();
-
-  const {
-    data: blockedUsers,
-    isLoading: isLoadingBlockedUsers,
-    error: blockedUsersError,
-  } = useGetBlockedUsersQuery();
-
-  const isValidSearchQuery = /^NOX-\d{8}$/.test(searchQuery);
-
-  const {
-    data: searchResult,
-    isLoading: isLoadingSearch,
-    error: searchError,
-  } = useSearchUserByIdQuery(searchQuery, { skip: !isValidSearchQuery });
-
-  const [addFriend, { isLoading: isAddingFriend }] = useAddFriendMutation();
-  const [blockFriend, { isLoading: isBlockingFriend }] =
-    useBlockFriendMutation();
-  const [removeFriend, { isLoading: isRemovingFriend }] =
-    useRemoveFriendMutation();
-  const [acceptFriendRequest, { isLoading: isAcceptingFriendRequest }] =
-    useAcceptFriendRequestMutation();
-  const [rejectFriendRequest, { isLoading: isRejectingFriendRequest }] =
-    useRejectFriendRequestMutation();
-  const [unblockUser, { isLoading: isUnblockingUser }] =
-    useUnblockUserMutation();
-
   const { user } = useAppSelector((state) => state.auth);
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(user.noxId);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {
+    searchQuery,
+    setSearchQuery,
+    isValidSearchQuery,
+    searchResult,
+    isLoadingSearch,
+    searchError,
 
-  const handleBlockFriend = async (noxId: string) => {
-    try {
-      await blockFriend(noxId).unwrap();
-    } catch {
-      toast.error("Failed to Block User", {
-        description: "An error occurred while blocking. Please try again.",
-      });
-    }
-  };
+    handleAddFriend,
+    handleRemoveFriend,
+    handleAcceptFriendRequest,
+    handleRejectFriendRequest,
+    handleBlockFriend,
+    handleUnblockUser,
 
-  const sendFriendRequest = async (noxId: string) => {
-    try {
-      await addFriend(noxId).unwrap();
-      toast.success("Friend Request Sent", {
-        description: `Your friend request to ${noxId} has been sent successfully.`,
-      });
-    } catch {
-      toast.error("Failed to Send Friend Request", {
-        description:
-          "An error occurred while sending the friend request. Please try again.",
-      });
-    }
-  };
+    isFriendAlreadyInList,
+    isBlockedUser,
 
-  const isFriendAlreadyAdded = (noxId: string) => {
-    console.log(noxId);
-    return !!friends?.some((item) => item.noxId === noxId);
-  };
+    isAddingFriend,
+    isBlockingFriend,
+    isRemovingFriend,
+    isAcceptingFriendRequest,
+    isRejectingFriendRequest,
+    isUnblockingUser,
 
-  const isBlockedUser = (noxId: string) => {
-    return !!blockedUsers?.some((item) => item.noxId === noxId);
-  };
+    friends,
+    isLoadingFriends,
+    friendsError,
+    friendRequests,
+    isLoadingFriendRequests,
+    friendRequestsError,
+    blockedUsers,
+    isLoadingBlockedUsers,
+    blockedUsersError,
 
-  const handleRemoveFriend = async (noxId: string) => {
-    try {
-      await removeFriend(noxId).unwrap();
-      toast.success("Friend Removed", {
-        description: `Your friend ${noxId} has been been removed successfully.`,
-      });
-    } catch {
-      toast.error("Failed to remove Friend.", {
-        description:
-          "An error occurred while removing friend. Please try again.",
-      });
-    }
-  };
+    refetchFriendRequests,
+  } = useFriendService();
 
-  const handleAcceptFriendRequest = async (noxId: string) => {
-    try {
-      await acceptFriendRequest(noxId).unwrap();
-      toast.success("Friend Request Accepted", {
-        description: `Friend request from ${noxId} has been been accepted successfully.`,
-      });
-    } catch {
-      toast.error("Failed to accept request.", {
-        description:
-          "An error occurred while accepting friend request. Please try again.",
-      });
-    }
-  };
-
-  const handleRejectFriendRequest = async (noxId: string) => {
-    try {
-      await rejectFriendRequest(noxId).unwrap();
-      toast.success("Friend Request Rejected", {
-        description: `Friend Request from ${noxId} has been been rejected successfully.`,
-      });
-    } catch {
-      toast.error("Failed to Reject Request.", {
-        description:
-          "An error occurred while rejecting friend request. Please try again.",
-      });
-    }
-  };
-
-  const handleUnblockUser = async (noxId: string) => {
-    try {
-      await unblockUser(noxId).unwrap();
-    } catch {
-      toast.error("Failed to Unblock.", {
-        description:
-          "An error occurred while unblocking user. Please try again.",
-      });
-    }
-  };
+  const { copied, copyToClipboard } = useCopyToClipboard();
 
   return (
     <div className="min-h-screen text-gray-100">
@@ -208,7 +97,7 @@ const Friends = () => {
                               {user.noxId}
                             </span>
                             <button
-                              onClick={copyToClipboard}
+                              onClick={() => copyToClipboard(user.noxId)}
                               className="ml-2 text-gray-400 hover:text-purple-400 focus:outline-none transition-colors"
                             >
                               {copied ? (
@@ -232,8 +121,6 @@ const Friends = () => {
                 </div>
               </div>
             </div>
-            <div className="p-[1px] top-0 z-0 absolute left-0 h-full rounded-2xl w-20 bg-gradient-to-r from-purple-600 to-indigo-600 group-focus-within:w-full transition-all duration-300"></div>
-            <div className="p-[1px] top-0 z-0 absolute right-0 h-full rounded-2xl w-20 bg-gradient-to-r from-purple-600 to-indigo-600 group-focus-within:w-full transition-all duration-300"></div>
           </div>
 
           <Searchbar
@@ -244,10 +131,10 @@ const Friends = () => {
             }
             searchResult={searchResult!}
             isSearching={isLoadingSearch}
-            sendFriendRequest={sendFriendRequest}
+            addFriend={handleAddFriend}
             isAddingFriend={isAddingFriend}
             searchError={searchError}
-            isFriendAlreadyAdded={isFriendAlreadyAdded}
+            isFriendAlreadyInList={isFriendAlreadyInList}
             handleBlockFriend={handleBlockFriend}
             handleRemoveFriend={handleRemoveFriend}
             isBlockingFriend={isBlockingFriend}
@@ -259,16 +146,31 @@ const Friends = () => {
         </div>
 
         <Tabs defaultValue="friends">
-          <TabsList>
-            <TabsTrigger
-              className="data-[state=active]:bg-gradient-to-r from-purple-600/80 to-indigo-600/80"
-              value="friends"
-            >
-              Friends
-            </TabsTrigger>
-            <TabsTrigger value="requests">Requests</TabsTrigger>
-            <TabsTrigger value="blocked">Blocked</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center">
+            <TabsList>
+              <TabsTrigger
+                className="data-[state=active]:bg-gradient-to-r from-purple-600/80 to-indigo-600/80 space-x-1"
+                value="friends"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>Friends</span>
+              </TabsTrigger>
+              <TabsTrigger
+                className="data-[state=active]:bg-gradient-to-r from-purple-600/80 to-indigo-600/80 space-x-1"
+                value="requests"
+              >
+                <Bell className="h-4 w-4" />
+                <span>Requests</span>
+              </TabsTrigger>
+              <TabsTrigger
+                className="data-[state=active]:bg-gradient-to-r from-purple-600/80 to-indigo-600/80 space-x-1"
+                value="blocked"
+              >
+                <Shield className="h-4 w-4" />
+                <span>Blocked</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           <TabsContent value="friends">
             <div className="space-y-4">
               {isLoadingFriends ? (
@@ -319,7 +221,7 @@ const Friends = () => {
                   <div className="flex justify-end">
                     <Button
                       variant="ghost"
-                      onClick={refetch}
+                      onClick={refetchFriendRequests}
                       className="px-2 py-0 rounded-xl"
                     >
                       <Repeat2 className="text-purple-600" />
